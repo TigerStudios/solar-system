@@ -59,7 +59,7 @@ App.prototype.render = function(){
 
     t.time += t.TIME_STEP;
 
-    t.sun.update(t.time,t.elapsed);
+    t.sun.update(t.renderer,t.time,t.elapsed);
 
     t.renderer.render(t.scene,t.camera);
     requestAnimationFrame(() => t.render());
