@@ -14,6 +14,7 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     this.THREE = THREE;
     this.TWEEN = TWEEN;
     this.ORBIT_CONTROLS = ORBIT_CONTROLS;
+    this.SUN_Z_DISTANCE = 250;
 
     this.asset = asset;
 
@@ -72,7 +73,7 @@ App.prototype.initCamera = function(){
 
     t.camera = new t.THREE.PerspectiveCamera(50,window.innerWidth / window.innerHeight,0.1,10000);
 
-    t.camera.position.set(0,0,300);
+    t.camera.position.set(0,0,t.SUN_Z_DISTANCE);
     t.camera.lookAt(new t.THREE.Vector3());
 
 };
