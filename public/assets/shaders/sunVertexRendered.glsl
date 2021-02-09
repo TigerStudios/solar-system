@@ -30,9 +30,9 @@ void main() {
     vPosition = position;
     vNormal = normal;
 
-    float t0 = time * 0.001;
-    float t1 = time * 0.002;
-    float t2 = time * 0.003;
+    float t0 = time * 0.0005;
+    float t1 = time * 0.001;
+    float t2 = time * 0.002;
 
     vec3 pos0 = position;
     vec3 pos1 = position + 15.;

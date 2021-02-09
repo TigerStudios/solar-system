@@ -14,7 +14,7 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     this.THREE = THREE;
     this.TWEEN = TWEEN;
     this.ORBIT_CONTROLS = ORBIT_CONTROLS;
-    this.SUN_Z_DISTANCE = 250;
+    this.SUN_Z_DISTANCE = 210;
 
     this.asset = asset;
 
@@ -60,7 +60,7 @@ App.prototype.render = function(){
 
     t.time += t.TIME_STEP;
 
-    t.sun.update(t.renderer,t.time,t.elapsed);
+    t.sun.update(t.renderer,t.camera,t.time,t.elapsed);
 
     t.renderer.render(t.scene,t.camera);
     requestAnimationFrame(() => t.render());

@@ -13,6 +13,7 @@ function Sun( parameters ) {
     this.APP_DAY_MS = 86400000;
     this.RADIUS = 696340;
     this.CIRCONVOLUTION = (27 * this.APP_DAY_MS) / this.APP_TIME_SCALE;
+    this.SUN_Z_DISTANCE = 210;
 
     //Shaders
     this.vertexShaderRenderd = null;
@@ -33,6 +34,7 @@ function Sun( parameters ) {
     this.renderedGeometry = null;
     this.renderedMaterial = null;
 
+    this.aloTexture = new parameters.THREE.TextureLoader().load(`${asset}assets/images/sun/sun-glow.png`);
     this.aloGeometry = null;
     this.aloMaterial = null;
 
@@ -47,7 +49,7 @@ function Sun( parameters ) {
     this.sunMesh = new parameters.THREE.Group();
 
     this.sunMesh.add(this.meshRendered);
-    //this.sunMesh.add(this.meshAlo);
+    this.sunMesh.add(this.meshAlo);
 
     this.cubeScene.add(this.meshCube);
     this.scene.add(this.sunMesh);
@@ -114,22 +116,19 @@ Sun.prototype.setAlo = function(parameters){
 
     const t = this;
 
-    t.aloGeometry = new parameters.THREE.SphereBufferGeometry(
-        (this.RADIUS / this.APP_SCLAE) + 20,
-        64,
-        64
+    t.aloGeometry = new parameters.THREE.PlaneBufferGeometry(
+        this.RADIUS / this.APP_SCLAE * 2.91 + 15,
+        this.RADIUS / this.APP_SCLAE * 2.91 + 15,
+        1,
+        1
     );
 
     t.aloMaterial =  new parameters.THREE.ShaderMaterial({
         vertexShader : t.vertexShaderAlo,
         fragmentShader : t.fragmentShaderAlo,
         uniforms : t.getUniformsAlo(),
-        side : parameters.THREE.BackSide,
-        //blending : parameters.THREE.AdditiveBlending,
-        depthTest : false,
-        depthWrite : false,
-        //transparent : true,
-        //vertexColors : true
+        side : parameters.THREE.FrontSide,
+        transparent : true
     });
 
 };
@@ -246,23 +245,72 @@ Sun.prototype.getUniformsAlo = function(){
 
     return {
         time : {value : 0},
+        sGlow : {value : this.aloTexture},
     };
 
 };
 
-Sun.prototype.update = function(renderer,time,elapsed){
+Sun.prototype.update = function(renderer,camera,time,elapsed){
 
     const t = this;
 
     if(t.cubeMaterial){
 
+        //Update and render original sphere texture
         t.cubeMaterial.uniforms.time.value = time;
         t.meshCube.rotation.y += Math.PI * 2 * (elapsed / t.CIRCONVOLUTION);
 
         t.cubeCamera.update( renderer, t.cubeScene );
 
+        //Update and render textures
         t.renderedMaterial.uniforms.time.value = time;
         t.renderedMaterial.uniforms.tCube.value = t.cubeTarget.texture;
+
+        //Sun glow computation
+        t.meshAlo.lookAt(camera.position);
+
+        const distance = camera.position.distanceTo(t.meshRendered.position);
+        let gap = t.SUN_Z_DISTANCE / distance;
+        let scaleM = t.SUN_Z_DISTANCE - distance ;
+
+        if(scaleM < 50){
+            scaleM = 0.001;
+        }else if(scaleM >= 50 && scaleM < 55){
+            scaleM = 0.0012;
+        }else if(scaleM >= 55 && scaleM < 60){
+            scaleM = 0.00122;
+        }else if(scaleM >= 60 && scaleM < 65){
+            scaleM = 0.00127;
+        }else if(scaleM >= 65 && scaleM < 70){
+            scaleM = 0.00130;
+        }else if(scaleM >= 70 && scaleM < 75){
+            scaleM = 0.00135;
+        }else if(scaleM >= 75 && scaleM < 80){
+            scaleM = 0.00145;
+        }else if(scaleM >= 80 && scaleM < 85){
+            scaleM = 0.00165;
+        }else if(scaleM >= 85 && scaleM < 90){
+            scaleM = 0.00173;
+        }else if(scaleM >= 90 && scaleM < 95){
+            scaleM = 0.00182;
+        }else if(scaleM >= 95 && scaleM < 100){
+            scaleM = 0.0021;
+        }else if(scaleM >= 100 && scaleM < 105){
+            scaleM = 0.00235;
+        }else if(scaleM >= 105 && scaleM < 110){
+            scaleM = 0.00273;
+        }else if(scaleM >= 110 && scaleM < 115){
+            scaleM = 0.0032;
+        }else if(scaleM >= 115 && scaleM < 120){
+            scaleM = 0.00377;
+        }else{
+            scaleM = 0.005;
+        }
+
+        gap = gap <= 1 ? (gap - 1) * 0.07 : (t.SUN_Z_DISTANCE - distance) * scaleM;
+
+        const scale = 1 + gap;
+        t.meshAlo.scale.set(scale,scale,1);
 
     }
 
