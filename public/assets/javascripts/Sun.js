@@ -22,6 +22,8 @@ function Sun( parameters ) {
     this.fragmentShaderCube = null;
     this.vertexShaderAlo = null;
     this.fragmentShaderAlo = null;
+    this.vertexShaderRays = null;
+    this.fragmentShaderRays = null;
 
     this.getVertexShader();
     this.getFragmentShader();
@@ -38,18 +40,25 @@ function Sun( parameters ) {
     this.aloGeometry = null;
     this.aloMaterial = null;
 
+    this.raysTexture = new parameters.THREE.TextureLoader().load(`${asset}assets/images/sun/sun-rays.png`);
+    this.raysGeometry = null;
+    this.raysMaterial = null;
+
     this.setCube(parameters);
     this.setRendered(parameters);
     this.setAlo(parameters);
+    this.setRays(parameters);
 
     this.meshCube = new parameters.THREE.Mesh(this.cubeGeometry,this.cubeMaterial);
     this.meshRendered = new parameters.THREE.Mesh(this.renderedGeometry,this.renderedMaterial);
     this.meshAlo = new parameters.THREE.Mesh(this.aloGeometry,this.aloMaterial);
+    this.meshRays = new parameters.THREE.Mesh(this.raysGeometry,this.raysMaterial);
 
     this.sunMesh = new parameters.THREE.Group();
 
     this.sunMesh.add(this.meshRendered);
     this.sunMesh.add(this.meshAlo);
+    this.sunMesh.add(this.meshRays);
 
     this.cubeScene.add(this.meshCube);
     this.scene.add(this.sunMesh);
@@ -133,6 +142,26 @@ Sun.prototype.setAlo = function(parameters){
 
 };
 
+Sun.prototype.setRays = function(parameters){
+
+    const t = this;
+
+    t.raysGeometry = new parameters.THREE.SphereBufferGeometry(
+        this.RADIUS / this.APP_SCLAE + 1,
+        64,
+        64
+    );
+
+    t.raysMaterial =  new parameters.THREE.ShaderMaterial({
+        vertexShader : t.vertexShaderRays,
+        fragmentShader : t.fragmentShaderRays,
+        uniforms : t.getUniformsRays(),
+        side : parameters.THREE.FrontSide,
+        transparent : true
+    });
+
+};
+
 Sun.prototype.getVertexShader = function(){
 
     const t = this;
@@ -175,6 +204,19 @@ Sun.prototype.getVertexShader = function(){
     };
 
     r2.send();
+
+    const r3 = new XMLHttpRequest();
+
+    r3.open('get',`${t.asset}assets/shaders/sunVertexRays.glsl`,false);
+    r3.onreadystatechange = () => {
+        if(r3.readyState === 4 && r3.status === 200){
+
+            t.vertexShaderRays = r3.responseText;
+
+        }
+    };
+
+    r3.send();
 
 
 };
@@ -222,6 +264,19 @@ Sun.prototype.getFragmentShader = function(){
 
     r2.send();
 
+    const r3 = new XMLHttpRequest();
+
+    r3.open('get',`${t.asset}assets/shaders/sunFragmentRays.glsl`,false);
+    r3.onreadystatechange = () => {
+        if(r3.readyState === 4 && r3.status === 200){
+
+            t.fragmentShaderRays = r3.responseText;
+
+        }
+    };
+
+    r3.send();
+
 };
 
 Sun.prototype.getUniformsCube = function(){
@@ -250,6 +305,15 @@ Sun.prototype.getUniformsAlo = function(){
 
 };
 
+Sun.prototype.getUniformsRays = function(){
+
+    return {
+        time : {value : 0},
+        sRays : {value : this.raysTexture},
+    };
+
+};
+
 Sun.prototype.update = function(renderer,camera,time,elapsed){
 
     const t = this;
@@ -268,6 +332,8 @@ Sun.prototype.update = function(renderer,camera,time,elapsed){
 
         //Sun glow computation
         t.meshAlo.lookAt(camera.position);
+
+        t.raysMaterial.uniforms.time.value = time;
 
         const distance = camera.position.distanceTo(t.meshRendered.position);
         let gap = t.SUN_Z_DISTANCE / distance;
