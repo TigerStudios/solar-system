@@ -6,6 +6,8 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     Module.call(this);
 
     //Imports
+    const AudioController = this.require(asset,'assets/javascripts/AudioController');
+    const InfoController = this.require(asset,'assets/javascripts/InfoController');
     const Sun = this.require(asset,'assets/javascripts/Sun');
 
     //Const
@@ -14,9 +16,13 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     this.THREE = THREE;
     this.TWEEN = TWEEN;
     this.ORBIT_CONTROLS = ORBIT_CONTROLS;
-    this.SUN_Z_DISTANCE = 210;
+    this.SUN_Z_DISTANCE = 215;
 
     this.asset = asset;
+
+    //Controllers
+    this.audio = new AudioController();
+    this.info = new InfoController();
 
     //Scene
     this.renderer = null;
@@ -37,7 +43,7 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     //Variables
     this.time = 0;
     this.before = performance.now();
-    this.now = this.start;
+    this.now = this.before;
     this.elapsed = 0;
 
     this.initRenderer();
@@ -83,6 +89,7 @@ App.prototype.initControls = function(){
     const t = this;
 
     t.controls = new t.ORBIT_CONTROLS( t.camera, t.renderer.domElement );
+    t.controls.enableZoom = false;
 
 };
 
@@ -113,7 +120,7 @@ App.prototype.listeners = function () {
     const t = this;
 
     _(window).bind('resize',() => t.resize());
-    
+
 };
 
 App.prototype.resize = function () {

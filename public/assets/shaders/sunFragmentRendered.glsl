@@ -24,7 +24,7 @@ float sun(){
 
 vec3 bToColor(float b){
 
-    b *= 0.32;
+    b *= 0.35;
 
     return (vec3(b,b*b,b*b*b*b) / 0.32) * 0.65;
 
