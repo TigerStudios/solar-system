@@ -56,6 +56,21 @@ body {
   top: 0;
   left: 0;
   z-index: 1;
+  height: 100%;
+}
+#interface-box #star-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding-left: 70px;
+  padding-top: 70px;
+  width: auto;
+  height: 100%;
+}
+#interface-box #star-info .name {
+  font-size: 100px;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 /*# sourceMappingURL=frontend.css.map */

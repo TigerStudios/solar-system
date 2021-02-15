@@ -21,7 +21,7 @@ function Sun( parameters ) {
     this.RAYS_2 = 5;
     this.RAY_2_LIFE_TIME = 500;
     this.RAYS_STEP_2 = 200;
-
+    this.POINT_SCALE_REF = 1009;
 
     //Shaders
     this.vertexShaderRenderd = null;
@@ -260,7 +260,7 @@ Sun.prototype.addRaysParticles2 = function(){
 
     for(let i = 0; i < pos.length; i++){
 
-        if(i % 128 === 2){
+        if(i % 170 === 2){
 
             t.rays2Particles.push({
 
@@ -280,7 +280,7 @@ Sun.prototype.addRaysParticles2 = function(){
 
             });
 
-            index += 128;
+            index += 170;
 
         }
 
@@ -320,9 +320,11 @@ Sun.prototype.setRaysParticles = function(){
 
             }
 
+            let currentSize = p.size * (window.innerHeight / t.POINT_SCALE_REF);
+
             position.push(p.position.x,p.position.y,p.position.z);
             angle.push(p.rotation);
-            size.push(p.size);
+            size.push(currentSize);
             opacity.push(p.alpha);
             life.push(p.life / p.lifeTime);
             direction.push(p.direction);
@@ -379,9 +381,11 @@ Sun.prototype.setRaysParticles2 = function(){
 
             }
 
+            let currentSize = p.size * (window.innerHeight / t.POINT_SCALE_REF);
+
             position.push(p.position.x,p.position.y,p.position.z);
             angle.push(p.rotation);
-            size.push(p.size);
+            size.push(currentSize);
             opacity.push(p.alpha);
             life.push(p.life / p.lifeTime);
             direction.push(p.direction);

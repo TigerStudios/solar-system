@@ -1,38 +1,43 @@
-#loader{
+#loader {
     position: absolute;
     width: 100%;
     height: 100vh;
-    top:0;
+    top: 0;
     left: 0;
     z-index: 2;
-    .box{
+
+    .box {
         width: 250px;
         height: 250px;
-        top:50%;
-        transform: translate(-50%,-50%);
+        top: 50%;
+        transform: translate(-50%, -50%);
         overflow: visible;
-        .inner{
+
+        .inner {
             position: absolute;
             height: 100%;
-            top:0;
+            top: 0;
             left: 0;
             cursor: pointer;
         }
-        .scaled{
+
+        .scaled {
             transform-origin: center;
-            transform: scale(0.6,0.6);
+            transform: scale(0.6, 0.6);
         }
-        .text{
+
+        .text {
             text-align: center;
             font-size: 30px;
             font-weight: 700;
             position: absolute;
-            top:100%;
+            top: 100%;
             left: 0;
             color: #f7941d;
         }
     }
-    #load-bar{
+
+    #load-bar {
         position: absolute;
         bottom: 0;
         left: 0;
@@ -42,13 +47,28 @@
     }
 }
 
-#system-stage{
-  height: 100vh;
+#system-stage {
+    height: 100vh;
 }
 
-#interface-box{
-  position: absolute;
-  top:0;
-  left:0;
-  z-index: 1;
+#interface-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    height: 100%;
+    #star-info {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding-left: 70px;
+        padding-top: 70px;
+        width: auto;
+        height: 100%;
+        .name {
+            font-size: 100px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+    }
 }

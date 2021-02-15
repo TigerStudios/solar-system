@@ -21,7 +21,11 @@
             <!--3d stage-->
 
             <!--2d interface-->
-        <div class="col-pp-12" id="interface-box"></div>
+        <div class="col-pp-12" id="interface-box">
+            <div class="ts-grid-fixed" id="star-info">
+                <div class="col-pp-12 ts-font-elegance name"></div>
+            </div>
+        </div>
             <!--2d interface-->
 
     </div>
