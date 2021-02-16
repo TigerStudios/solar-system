@@ -9,20 +9,28 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     const AudioController = this.require(asset,'assets/javascripts/AudioController');
     const InfoController = this.require(asset,'assets/javascripts/InfoController');
     const Sun = this.require(asset,'assets/javascripts/Sun');
+    const Warp = this.require(asset,'assets/javascripts/Warp');
 
     //Const
     this.TIME_STEP = 0.1;
-
     this.THREE = THREE;
     this.TWEEN = TWEEN;
     this.ORBIT_CONTROLS = ORBIT_CONTROLS;
     this.SUN_Z_DISTANCE = 215;
+    this.COORDINATES = {
+        sun : new THREE.Vector3(0,0,0),
+        earth : new THREE.Vector3(0,0,0),
+        moon : new THREE.Vector3(0,0,0),
+    }
 
     this.asset = asset;
 
     //Controllers
     this.audio = new AudioController();
     this.info = new InfoController();
+
+    //Warp
+    this.warp = new Warp(THREE,TWEEN);
 
     //Scene
     this.renderer = null;
@@ -45,6 +53,12 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     this.before = performance.now();
     this.now = this.before;
     this.elapsed = 0;
+    this.currentLocation = 'sun';
+
+    //Booleans
+    this.onSun = true;
+    this.onEarth = false;
+    this.onMoon = false;
 
     this.initRenderer();
     this.initCamera();
@@ -66,7 +80,11 @@ App.prototype.render = function(){
 
     t.time += t.TIME_STEP;
 
-    t.sun.update(t.renderer,t.camera,t.time,t.elapsed);
+    if(t.onSun){
+
+        t.sun.update(t.renderer,t.camera,t.time,t.elapsed);
+
+    }
 
     t.renderer.render(t.scene,t.camera);
     requestAnimationFrame(() => t.render());
@@ -120,6 +138,63 @@ App.prototype.listeners = function () {
     const t = this;
 
     _(window).bind('resize',() => t.resize());
+
+    _(window).on('FLY',() => t.turnCamera());
+
+};
+
+App.prototype.turnCamera = function (){
+
+    const t = this;
+
+    const startRotation = t.camera.rotation.y;
+    const radians = 180 * (Math.PI / 180);
+
+    t.controls.enabled = false;
+
+    jTS.jAnimate(3000,(progress) => {
+
+        t.camera.rotation.y = startRotation + (progress * radians);
+
+    },{
+
+        timing_function : 'accelerate',
+        ease_in_out : true,
+        callback : () => {
+
+            _(window).emits('WARP');
+            t.setNextLocation();
+
+        }
+
+    });
+
+
+};
+
+App.prototype.setNextLocation = function (){
+
+    const t = this;
+
+    switch (t.currentLocation){
+
+        case 'sun' :
+            t.onSun = false;
+            t.onEarth = true;
+            t.currentLocation = 'earth'
+            break;
+        case 'earth' :
+            t.onEarth = false;
+            t.onMoon = true;
+            t.currentLocation = 'moon';
+            break;
+        case 'moon' :
+            t.onMoon = false;
+            t.onSun = true;
+            t.currentLocation = 'sun';
+            break;
+
+    }
 
 };
 

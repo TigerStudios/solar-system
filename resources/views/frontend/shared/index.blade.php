@@ -21,12 +21,40 @@
             <!--3d stage-->
 
             <!--2d interface-->
-        <div class="col-pp-12" id="interface-box">
-            <div class="ts-grid-fixed" id="star-info">
-                <div class="col-pp-12 ts-font-elegance name"></div>
+        <div class="col-pp-12" id="interface-box" disabled>
+            <div class="row">
+                <div class="col-pp-12" id="star-info">
+                    <div class="col-pp-12 ts-font-elegance name"></div>
+                    <div class="col-pp-12 ts-font-helvetica diameter">
+                        <div class="col-pp-5 key">Diameter : </div>
+                        <div class="col-pp-6h target"></div>
+                    </div>
+                    <div class="col-pp-12 ts-font-helvetica rotation">
+                        <div class="col-pp-5 key">Rotation speed : </div>
+                        <div class="col-pp-6h target"></div>
+                    </div>
+                    <div class="col-pp-12 ts-font-helvetica revolution">
+                        <div class="col-pp-5 key">Revolution time : </div>
+                        <div class="col-pp-6h target"></div>
+                    </div>
+                    <div class="col-pp-12 ts-font-helvetica distance">
+                        <div class="col-pp-5 key">Distance : </div>
+                        <div class="col-pp-6h target"></div>
+                    </div>
+                </div>
+                <div class="col-pp-12 overflow-visible" id="fly-controls">
+                    <div class="ts-grid-fixed overflow-visible button">
+                        <i class="fa fa-rocket"></i>
+                        <span class="ts-font-elegance tooltip">fly</span>
+                    </div>
+                </div>
             </div>
         </div>
             <!--2d interface-->
+
+            <!--3d Warp stage-->
+        <div class="col-pp-12" id="warp-stage" disabled=""></div>
+            <!--3d Warp stage-->
 
     </div>
 @endsection
