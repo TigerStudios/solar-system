@@ -17,10 +17,12 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     this.TWEEN = TWEEN;
     this.ORBIT_CONTROLS = ORBIT_CONTROLS;
     this.SUN_Z_DISTANCE = 215;
+    this.EARTH_Z_DISTANCE = 215;
+    this.MOON_Z_DISTANCE = 215;
     this.COORDINATES = {
-        sun : new THREE.Vector3(0,0,0),
-        earth : new THREE.Vector3(0,0,0),
-        moon : new THREE.Vector3(0,0,0),
+        sun : new THREE.Vector3(0,0,this.SUN_Z_DISTANCE),
+        earth : new THREE.Vector3(0,0,this.EARTH_Z_DISTANCE),
+        moon : new THREE.Vector3(0,0,this.MOON_Z_DISTANCE),
     }
 
     this.asset = asset;
@@ -84,6 +86,10 @@ App.prototype.render = function(){
 
         t.sun.update(t.renderer,t.camera,t.time,t.elapsed);
 
+    }else if(t.onEarth){
+
+    } else if(t.onMoon){
+
     }
 
     t.renderer.render(t.scene,t.camera);
@@ -97,7 +103,7 @@ App.prototype.initCamera = function(){
 
     t.camera = new t.THREE.PerspectiveCamera(50,window.innerWidth / window.innerHeight,0.1,10000);
 
-    t.camera.position.set(0,0,t.SUN_Z_DISTANCE);
+    t.camera.position.copy(t.COORDINATES[t.currentLocation]);
     t.camera.lookAt(new t.THREE.Vector3());
 
 };
@@ -141,14 +147,22 @@ App.prototype.listeners = function () {
 
     _(window).on('FLY',() => t.turnCamera());
 
+    _(window).on('FLY_OVER',() => setTimeout(() => t.showNewLocation(),1000));
+
 };
 
-App.prototype.turnCamera = function (){
+App.prototype.turnCamera = function (back){
 
     const t = this;
 
     const startRotation = t.camera.rotation.y;
-    const radians = 180 * (Math.PI / 180);
+    let radians = 180 * (Math.PI / 180);
+
+    if(back){
+
+        radians *= -1;
+
+    }
 
     t.controls.enabled = false;
 
@@ -162,8 +176,16 @@ App.prototype.turnCamera = function (){
         ease_in_out : true,
         callback : () => {
 
-            _(window).emits('WARP');
-            t.setNextLocation();
+            if(back){
+
+                t.controls.enabled = true;
+
+            }else{
+
+                _(window).emits('WARP');
+                t.setNextLocation();
+
+            }
 
         }
 
@@ -180,21 +202,49 @@ App.prototype.setNextLocation = function (){
 
         case 'sun' :
             t.onSun = false;
-            t.onEarth = true;
             t.currentLocation = 'earth'
             break;
         case 'earth' :
             t.onEarth = false;
-            t.onMoon = true;
             t.currentLocation = 'moon';
             break;
         case 'moon' :
             t.onMoon = false;
-            t.onSun = true;
             t.currentLocation = 'sun';
             break;
 
     }
+
+    _(window).emits('LOACTION_CHANGE',{
+
+        location : t.currentLocation
+
+    });
+
+};
+
+App.prototype.showNewLocation = function (){
+
+    const t = this;
+
+    t.camera.position.copy(t.COORDINATES[t.currentLocation]);
+    t.camera.rotation.set(0,180 * (Math.PI / 180),0);
+
+    switch (t.currentLocation){
+
+        case 'sun' :
+            t.onSun = true;
+            break;
+        case 'earth' :
+            t.onEarth = true;
+            break;
+        case 'moon' :
+            t.onMoon = true;
+            break;
+
+    }
+
+    t.turnCamera(true);
 
 };
 
