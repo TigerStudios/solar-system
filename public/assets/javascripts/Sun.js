@@ -9,7 +9,7 @@ function Sun( parameters ) {
 
     //Const
     this.THREE = parameters.THREE;
-    this.APP_SCLAE = 10000;
+    this.APP_SCALE = 10000;
     this.APP_TIME_SCALE = 20000;
     this.APP_DAY_MS = 86400000;
     this.RADIUS = 696340;
@@ -101,7 +101,7 @@ Sun.prototype.setCube = function(parameters){
     t.cubeCamera = new parameters.THREE.CubeCamera( 0.1, 100000, t.cubeTarget );
 
     t.cubeGeometry = new parameters.THREE.SphereBufferGeometry(
-        this.RADIUS / this.APP_SCLAE,
+        this.RADIUS / this.APP_SCALE,
         64,
         64
     );
@@ -125,7 +125,7 @@ Sun.prototype.setRendered = function(parameters){
     const t = this;
 
     t.renderedGeometry = new parameters.THREE.SphereBufferGeometry(
-        this.RADIUS / this.APP_SCLAE,
+        this.RADIUS / this.APP_SCALE,
         64,
         64
     );
@@ -149,7 +149,7 @@ Sun.prototype.setAlo = function(parameters){
     const t = this;
 
     t.aloGeometry = new parameters.THREE.CircleBufferGeometry(
-        this.RADIUS / this.APP_SCLAE * 1.57,
+        this.RADIUS / this.APP_SCALE * 1.57,
         128
     );
 

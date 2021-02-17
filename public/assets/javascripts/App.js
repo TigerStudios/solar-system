@@ -9,20 +9,25 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     const AudioController = this.require(asset,'assets/javascripts/AudioController');
     const InfoController = this.require(asset,'assets/javascripts/InfoController');
     const Sun = this.require(asset,'assets/javascripts/Sun');
+    const Earth = this.require(asset,'assets/javascripts/Earth');
+    const Moon = this.require(asset,'assets/javascripts/Moon');
     const Warp = this.require(asset,'assets/javascripts/Warp');
 
     //Const
+    this.APP_SCALE = 10000;
     this.TIME_STEP = 0.1;
     this.THREE = THREE;
     this.TWEEN = TWEEN;
     this.ORBIT_CONTROLS = ORBIT_CONTROLS;
     this.SUN_Z_DISTANCE = 215;
-    this.EARTH_Z_DISTANCE = 215;
-    this.MOON_Z_DISTANCE = 215;
+    this.EARTH_Z_DISTANCE = 1.8;
+    this.MOON_Z_DISTANCE = 0.5;
+    this.EARTH_X_DISTANCE = 152000000 / this.APP_SCALE;
+    this.MOON_X_DISTANCE = 152384400 / this.APP_SCALE;
     this.COORDINATES = {
         sun : new THREE.Vector3(0,0,this.SUN_Z_DISTANCE),
-        earth : new THREE.Vector3(0,0,this.EARTH_Z_DISTANCE),
-        moon : new THREE.Vector3(0,0,this.MOON_Z_DISTANCE),
+        earth : new THREE.Vector3(this.EARTH_X_DISTANCE,0,this.EARTH_Z_DISTANCE),
+        moon : new THREE.Vector3(this.MOON_X_DISTANCE,0,this.MOON_Z_DISTANCE),
     }
 
     this.asset = asset;
@@ -45,6 +50,18 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
 
     //Stars
     this.sun = new Sun({
+        THREE,
+        TWEEN,
+        scene : this.scene,
+    });
+
+    this.earth = new Earth({
+        THREE,
+        TWEEN,
+        scene : this.scene,
+    });
+
+    this.moon = new Moon({
         THREE,
         TWEEN,
         scene : this.scene,
@@ -88,7 +105,11 @@ App.prototype.render = function(){
 
     }else if(t.onEarth){
 
+        t.earth.update(t.renderer,t.camera,t.time,t.elapsed);
+
     } else if(t.onMoon){
+
+        t.moon.update(t.renderer,t.camera,t.time,t.elapsed);
 
     }
 
@@ -101,7 +122,7 @@ App.prototype.initCamera = function(){
 
     const t = this;
 
-    t.camera = new t.THREE.PerspectiveCamera(50,window.innerWidth / window.innerHeight,0.1,10000);
+    t.camera = new t.THREE.PerspectiveCamera(50,window.innerWidth / window.innerHeight,0.1,20000);
 
     t.camera.position.copy(t.COORDINATES[t.currentLocation]);
     t.camera.lookAt(new t.THREE.Vector3());
@@ -155,7 +176,7 @@ App.prototype.turnCamera = function (back){
 
     const t = this;
 
-    const startRotation = t.camera.rotation.y;
+    const startRotation = t.camera.rotation.x;
     let radians = 180 * (Math.PI / 180);
 
     if(back){
@@ -168,7 +189,7 @@ App.prototype.turnCamera = function (back){
 
     jTS.jAnimate(3000,(progress) => {
 
-        t.camera.rotation.y = startRotation + (progress * radians);
+        t.camera.rotation.x = startRotation + (progress * radians);
 
     },{
 
@@ -228,21 +249,25 @@ App.prototype.showNewLocation = function (){
     const t = this;
 
     t.camera.position.copy(t.COORDINATES[t.currentLocation]);
-    t.camera.rotation.set(0,180 * (Math.PI / 180),0);
 
     switch (t.currentLocation){
 
         case 'sun' :
             t.onSun = true;
+            t.camera.lookAt(new t.THREE.Vector3());
             break;
         case 'earth' :
             t.onEarth = true;
+            t.camera.lookAt(new t.THREE.Vector3(t.EARTH_X_DISTANCE,0,0));
             break;
         case 'moon' :
             t.onMoon = true;
+            t.camera.lookAt(new t.THREE.Vector3(t.MOON_X_DISTANCE,0,0));
             break;
 
     }
+
+    t.camera.rotation.set(180 * (Math.PI / 180),0,0);
 
     t.turnCamera(true);
 
