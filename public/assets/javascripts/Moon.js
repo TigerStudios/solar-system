@@ -19,6 +19,8 @@ function Moon( parameters ) {
     this.vertexShaderRenderd = null;
     this.fragmentShaderRendered = null;
 
+    this.map =  new this.THREE.TextureLoader().load(`${asset}assets/images/moon/moon_c.jpg`);
+    //this.displacementMap = new this.THREE.TextureLoader().load(`${asset}assets/images/moon/moon_d.jpg`);
     //this.getVertexShader();
     //this.getFragmentShader();
 
@@ -56,7 +58,8 @@ Moon.prototype.setRendered = function(parameters){
     });*/
 
     t.renderedMaterial = new parameters.THREE.MeshBasicMaterial({
-        color : 0xff0000
+        map : t.map,
+        color : 0xffffff
     });
 
 };

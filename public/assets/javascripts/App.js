@@ -45,6 +45,9 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     this.scene = new this.THREE.Scene();
     this.controls = null;
 
+    //Lights
+    this.ambient = null;
+
     //Stage
     this.stage = _('#system-stage');
 
@@ -81,6 +84,7 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
 
     this.initRenderer();
     this.initCamera();
+    //this.initLight();
     this.initControls();
     this.listeners();
     this.render();
@@ -126,6 +130,15 @@ App.prototype.initCamera = function(){
 
     t.camera.position.copy(t.COORDINATES[t.currentLocation]);
     t.camera.lookAt(new t.THREE.Vector3());
+
+};
+
+App.prototype.initLight = function (){
+
+    const t = this;
+
+    t.ambient = new t.THREE.AmbientLight(0xfffdd9,1.5);
+    t.scene.add(t.ambient);
 
 };
 
