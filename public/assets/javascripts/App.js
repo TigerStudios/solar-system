@@ -84,7 +84,7 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
 
     this.initRenderer();
     this.initCamera();
-    //this.initLight();
+    //this.initLights();
     this.initControls();
     this.listeners();
     this.render();
@@ -126,14 +126,14 @@ App.prototype.initCamera = function(){
 
     const t = this;
 
-    t.camera = new t.THREE.PerspectiveCamera(50,window.innerWidth / window.innerHeight,0.1,20000);
+    t.camera = new t.THREE.PerspectiveCamera(50,window.innerWidth / window.innerHeight,0.1,1000);
 
     t.camera.position.copy(t.COORDINATES[t.currentLocation]);
     t.camera.lookAt(new t.THREE.Vector3());
 
 };
 
-App.prototype.initLight = function (){
+App.prototype.initLights = function (){
 
     const t = this;
 
@@ -167,7 +167,7 @@ App.prototype.initRenderer = function(){
     t.renderer.setSize( window.innerWidth , window.innerHeight );
     t.renderer.shadowMap.enabled = true;
     t.renderer.shadowMap.type = t.THREE.PCFSoftShadowMap;
-    t.renderer.outputEncoding = t.THREE.sRGBEncoding;
+    //t.renderer.outputEncoding = t.THREE.sRGBEncoding;
 
     t.stage.append(t.renderer.domElement);
 
@@ -249,7 +249,9 @@ App.prototype.setNextLocation = function (){
 
     }
 
-    _(window).emits('LOACTION_CHANGE',{
+    t.camera.position.copy(t.COORDINATES[t.currentLocation]);
+
+    _(window).emits('LOCATION_CHANGE',{
 
         location : t.currentLocation
 
@@ -261,21 +263,22 @@ App.prototype.showNewLocation = function (){
 
     const t = this;
 
-    t.camera.position.copy(t.COORDINATES[t.currentLocation]);
-
     switch (t.currentLocation){
 
         case 'sun' :
             t.onSun = true;
             t.camera.lookAt(new t.THREE.Vector3());
+            t.controls.target = new t.THREE.Vector3();
             break;
         case 'earth' :
             t.onEarth = true;
             t.camera.lookAt(new t.THREE.Vector3(t.EARTH_X_DISTANCE,0,0));
+            t.controls.target = new t.THREE.Vector3(t.EARTH_X_DISTANCE,0,0);
             break;
         case 'moon' :
             t.onMoon = true;
             t.camera.lookAt(new t.THREE.Vector3(t.MOON_X_DISTANCE,0,0));
+            t.controls.target = new t.THREE.Vector3(t.MOON_X_DISTANCE,0,0);
             break;
 
     }

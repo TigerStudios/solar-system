@@ -7,6 +7,9 @@ function Warp(THREE,TWEEN){
     this.THREE = THREE;
     this.TWEEN = TWEEN;
     this.CAMERA_Z_POS = 0;
+    this.FLY_TIME = 12000;
+    this.FLY_ACCELERATION = 3000;
+    this.FLY_DELAY = (this.FLY_TIME * 0.5) + 500;
 
     //Shaders
     this.vertexShader = null;
@@ -175,7 +178,7 @@ Warp.prototype.startWarp = function (){
 
     this.renderer.render(this.scene,this.camera);
 
-    jTS.jAnimate(3000,(progress) => {
+    jTS.jAnimate(t.FLY_ACCELERATION,(progress) => {
 
         t.stretch = -1 + (2 * progress);
 
@@ -183,7 +186,7 @@ Warp.prototype.startWarp = function (){
 
         timing_function : 'accelerate',
         coefficient : 2,
-        callback : () => jTS.jAnimate(3000,(progress) => {
+        callback : () => jTS.jAnimate(t.FLY_ACCELERATION,(progress) => {
 
             t.stretch = -1 + (2 * progress)
 
@@ -192,14 +195,14 @@ Warp.prototype.startWarp = function (){
             timing_function : 'accelerate',
             coefficient : 2,
             ease_out : true,
-            delay : 14000,
+            delay : t.FLY_DELAY,
             reverse : true
 
         })
 
     });
 
-    jTS.jAnimate(10000,(progress) => {
+    jTS.jAnimate(t.FLY_TIME * 0.5,(progress) => {
 
         t.time = 10 * progress;
 
@@ -207,7 +210,7 @@ Warp.prototype.startWarp = function (){
 
         timing_function : 'accelerate',
         coefficient : 2,
-        callback : () => jTS.jAnimate(10000 , (progress) => {
+        callback : () => jTS.jAnimate(t.FLY_TIME * 0.5 , (progress) => {
 
             t.time = 10 * progress;
 
@@ -251,9 +254,12 @@ Warp.prototype.updateMaterialUniforms = function (){
 
     const t = this;
 
+    const width =  window.innerWidth * devicePixelRatio;
+    const height =  window.innerHeight * devicePixelRatio;
+
     t.warpMaterial.uniforms.iTime.value = t.time;
     t.warpMaterial.uniforms.uStretch.value = t.stretch;
-    t.warpMaterial.uniforms.iResolution.value = new t.THREE.Vector3(window.innerWidth,window.innerHeight,0);
+    t.warpMaterial.uniforms.iResolution.value = new t.THREE.Vector3(width,height,0);
 
 }
 

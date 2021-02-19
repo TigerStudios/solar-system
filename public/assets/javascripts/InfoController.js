@@ -65,7 +65,7 @@ InfoController.prototype.listeners = function (){
         t.flyButton.disabled(false);
 
     },1000));
-    _(window).on('LOACTION_CHANGE', (e) => t.setInfo(e.data.location));
+    _(window).on('LOCATION_CHANGE', (e) => t.setInfo(e.data.location));
 
     t.flyButton.click(() => {
 

@@ -20,9 +20,6 @@ function Moon( parameters ) {
     this.fragmentShaderRendered = null;
 
     this.map =  new this.THREE.TextureLoader().load(`${asset}assets/images/moon/moon_c.jpg`);
-    //this.displacementMap = new this.THREE.TextureLoader().load(`${asset}assets/images/moon/moon_d.jpg`);
-    //this.getVertexShader();
-    //this.getFragmentShader();
 
     this.renderedGeometry = null;
     this.renderedMaterial = null;
@@ -48,66 +45,10 @@ Moon.prototype.setRendered = function(parameters){
         64
     );
 
-    /*t.renderedMaterial =  new parameters.THREE.ShaderMaterial({
-        vertexShader : t.vertexShaderRenderd,
-        fragmentShader : t.fragmentShaderRendered,
-        uniforms : t.getUniformsRendered(),
-        depthTest : false,
-        depthWrite : false,
-        vertexColors : true
-    });*/
-
     t.renderedMaterial = new parameters.THREE.MeshBasicMaterial({
         map : t.map,
         color : 0xffffff
     });
-
-};
-
-Moon.prototype.getVertexShader = function(){
-
-    const t = this;
-
-    const r = new XMLHttpRequest();
-
-    r.open('get',`${t.asset}assets/shaders/moonVertex.glsl`,false);
-    r.onreadystatechange = () => {
-        if(r.readyState === 4 && r.status === 200){
-
-            t.vertexShaderRenderd = r.responseText;
-
-        }
-    };
-
-    r.send();
-
-};
-
-Moon.prototype.getFragmentShader = function(){
-
-    const t = this;
-
-    const r = new XMLHttpRequest();
-
-    r.open('get',`${t.asset}assets/shaders/moonFragment.glsl`,false);
-    r.onreadystatechange = () => {
-        if(r.readyState === 4 && r.status === 200){
-
-            t.fragmentShaderRendered = r.responseText;
-
-        }
-    };
-
-    r.send();
-
-};
-
-Moon.prototype.getUniformsRendered = function(){
-
-    return {
-        time : {value : 0},
-        mTexture : {value : null}
-    };
 
 };
 
@@ -118,10 +59,6 @@ Moon.prototype.update = function(renderer,camera,time,elapsed){
     if(t.meshRendered){
 
         t.meshRendered.rotation.y += Math.PI * 2 * (elapsed / t.CIRCONVOLUTION);
-
-        //Update and render textures
-        //t.renderedMaterial.uniforms.time.value = time;
-        //.renderedMaterial.uniforms.mTexture.value = t.moonTexture;
 
     }
 

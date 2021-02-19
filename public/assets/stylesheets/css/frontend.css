@@ -151,4 +151,11 @@ body {
   pointer-events: none;
 }
 
+@media (max-width: 414px) {
+  #interface-box #star-info {
+    padding-left: 20px;
+    padding-top: 20px;
+  }
+}
+
 /*# sourceMappingURL=frontend.css.map */
