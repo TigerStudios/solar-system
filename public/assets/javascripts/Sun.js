@@ -45,8 +45,6 @@ function Sun( parameters ) {
 
     this.renderedGeometry = null;
     this.renderedMaterial = null;
-    this.box3D = new this.THREE.Box3();
-    this.sizeV = new this.THREE.Vector3();
 
     this.aloTexture = new parameters.THREE.TextureLoader().load(`${asset}assets/images/sun/sun-glow.png`);
     this.aloGeometry = null;

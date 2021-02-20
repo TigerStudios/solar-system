@@ -5,6 +5,7 @@ function Earth( parameters ) {
 
     this.asset = asset;
     this.scene = parameters.scene;
+    this.cubeScene = new parameters.THREE.Scene();
 
     //Const
     this.THREE = parameters.THREE;
@@ -19,31 +20,76 @@ function Earth( parameters ) {
     this.Z_ROTATION = this.toRadians(20);
 
     //Shaders
-    this.vertexShaderRenderd = null;
-    this.fragmentShaderRendered = null;
-    //this.getVertexShader();
-    //this.getFragmentShader();
+    this.vertexShader = null;
+    this.fragmentShader = null;
+    this.getVertexShader();
+    this.getFragmentShader();
 
     //textures
     this.map = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_m.png`);
     this.normalMap = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_n.jpg`);
-    this.cloudstexture = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_clouds.jpg`);
+    this.cloudsTexture = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_clouds.jpg`);
 
+    //Clouds cube
+    this.cubeTarget = null;
+    this.cubeCamera = null;
+    this.cubeTexture = null;
+
+    this.cubeScene.background = this.textureCube;
+
+
+    //Base
     this.baseGeometry = null;
     this.baseMaterial = null;
 
+    //Clouds
+    this.cloudsGeometry = null;
+    this.cloudsMaterial = null;
+
+    this.setCube(parameters);
     this.setBase(parameters);
+    this.setClouds(parameters);
 
     this.meshBase = new this.THREE.Mesh(this.baseGeometry,this.baseMaterial);
+    this.meshClouds = new this.THREE.Mesh(this.cloudsGeometry,this.cloudsMaterial);
     this.meshBase.rotation.set(this.X_ROTATION,this.Y_ROTATION,this.Z_ROTATION);
 
+
     this.earthMesh = new parameters.THREE.Group();
-    this.earthMesh.position.set(this.X_POSITION,0,0);
 
     this.earthMesh.add(this.meshBase);
+    this.earthMesh.add(this.meshClouds);
+
+    this.earthMesh.position.set(this.X_POSITION,0,0);
+
     this.scene.add(this.earthMesh);
 
 }
+
+Earth.prototype.setCube = function (parameters){
+
+    const t = this;
+    const loader = new this.THREE.CubeTextureLoader();
+
+    t.cubeTarget = new parameters.THREE.WebGLCubeRenderTarget( 1024, {
+        format: parameters.THREE.RGBFormat,
+        generateMipmaps: true,
+        minFilter: parameters.THREE.LinearMipmapLinearFilter
+    } );
+
+    t.cubeCamera = new parameters.THREE.CubeCamera( 0.1, 100000, t.cubeTarget );
+
+    loader.setPath( `${asset}assets/images/earth/` );
+
+    t.textureCube = loader.load( [
+        'right.jpg', 'left.jpg',
+        'top.jpg', 'bottom.jpg',
+        'back.jpg', 'front.jpg'
+    ] );
+
+    this.cubeScene.background = t.textureCube;
+
+};
 
 Earth.prototype.setBase = function(parameters){
 
@@ -65,6 +111,29 @@ Earth.prototype.setBase = function(parameters){
 
 };
 
+Earth.prototype.setClouds = function (parameters){
+
+    const t = this;
+
+    t.cloudsGeometry = new parameters.THREE.SphereBufferGeometry(
+        (this.RADIUS / this.APP_SCALE) + 0.001,
+        64,
+        64
+    );
+
+    t.cloudsMaterial = new parameters.THREE.ShaderMaterial({
+        vertexShader : t.vertexShader,
+        fragmentShader : t.fragmentShader,
+        uniforms : t.getUniforms(),
+        side : parameters.THREE.FrontSide,
+        vertexColors : true,
+        transparent : true,
+        depthWrite : false,
+        depthTest : false
+    });
+
+};
+
 Earth.prototype.getVertexShader = function(){
 
     const t = this;
@@ -75,7 +144,7 @@ Earth.prototype.getVertexShader = function(){
     r.onreadystatechange = () => {
         if(r.readyState === 4 && r.status === 200){
 
-            t.vertexShaderRenderd = r.responseText;
+            t.vertexShader = r.responseText;
 
         }
     };
@@ -94,7 +163,7 @@ Earth.prototype.getFragmentShader = function(){
     r.onreadystatechange = () => {
         if(r.readyState === 4 && r.status === 200){
 
-            t.fragmentShaderRendered = r.responseText;
+            t.fragmentShader = r.responseText;
 
         }
     };
@@ -103,11 +172,11 @@ Earth.prototype.getFragmentShader = function(){
 
 };
 
-Earth.prototype.getUniformsRendered = function(){
+Earth.prototype.getUniforms = function(){
 
     return {
         time : {value : 0},
-        mTexture : {value : null}
+        mTexture : {value : this.cloudsTexture}
     };
 
 };
@@ -118,12 +187,16 @@ Earth.prototype.update = function(renderer,camera,time,elapsed){
 
     if(t.meshBase){
 
-        //Base
-        t.meshBase.rotation.y += Math.PI * 2 * (elapsed / t.CIRCONVOLUTION);
+        //Cube
+        t.cubeCamera.update( renderer, t.cubeScene );
 
-        //Update and render textures
-        //t.renderedMaterial.uniforms.time.value = time;
-        //.renderedMaterial.uniforms.mTexture.value = t.moonTexture;
+        //Clouds
+        t.cloudsMaterial.uniforms.time.value = time;
+        t.cloudsMaterial.uniforms.mTexture.value =  t.cubeTarget.texture;
+
+        //Rotation
+        t.meshBase.rotation.y += Math.PI * 2 * (elapsed / t.CIRCONVOLUTION);
+        t.meshClouds.rotation.y += Math.PI * 2 * (elapsed / t.CIRCONVOLUTION);
 
     }
 
