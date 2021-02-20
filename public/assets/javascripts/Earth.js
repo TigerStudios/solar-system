@@ -12,51 +12,55 @@ function Earth( parameters ) {
     this.APP_TIME_SCALE = 20000;
     this.APP_DAY_MS = 86400000;
     this.RADIUS = 6371;
-    this.CIRCONVOLUTION = this.APP_DAY_MS / this.APP_TIME_SCALE;
+    this.CIRCONVOLUTION = (27 * this.APP_DAY_MS) / this.APP_TIME_SCALE;
     this.X_POSITION = 152000000 / this.APP_SCALE;
+    this.X_ROTATION = this.toRadians(15);
+    this.Y_ROTATION = this.toRadians(123);
+    this.Z_ROTATION = this.toRadians(20);
 
     //Shaders
     this.vertexShaderRenderd = null;
     this.fragmentShaderRendered = null;
-
     //this.getVertexShader();
     //this.getFragmentShader();
 
-    this.renderedGeometry = null;
-    this.renderedMaterial = null;
+    //textures
+    this.map = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_m.png`);
+    this.normalMap = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_n.jpg`);
+    this.cloudstexture = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_clouds.jpg`);
 
-    this.setRendered(parameters);
+    this.baseGeometry = null;
+    this.baseMaterial = null;
 
-    this.meshRendered = new this.THREE.Mesh(this.renderedGeometry,this.renderedMaterial);
+    this.setBase(parameters);
+
+    this.meshBase = new this.THREE.Mesh(this.baseGeometry,this.baseMaterial);
+    this.meshBase.rotation.set(this.X_ROTATION,this.Y_ROTATION,this.Z_ROTATION);
+
     this.earthMesh = new parameters.THREE.Group();
     this.earthMesh.position.set(this.X_POSITION,0,0);
 
-    this.earthMesh.add(this.meshRendered);
+    this.earthMesh.add(this.meshBase);
     this.scene.add(this.earthMesh);
 
 }
 
-Earth.prototype.setRendered = function(parameters){
+Earth.prototype.setBase = function(parameters){
 
     const t = this;
 
-    t.renderedGeometry = new parameters.THREE.SphereBufferGeometry(
+    t.baseGeometry = new parameters.THREE.SphereBufferGeometry(
         this.RADIUS / this.APP_SCALE,
         64,
         64
     );
 
-    /*t.renderedMaterial =  new parameters.THREE.ShaderMaterial({
-        vertexShader : t.vertexShaderRenderd,
-        fragmentShader : t.fragmentShaderRendered,
-        uniforms : t.getUniformsRendered(),
-        depthTest : false,
-        depthWrite : false,
-        vertexColors : true
-    });*/
 
-    t.renderedMaterial = new parameters.THREE.MeshBasicMaterial({
-        color : 0xff00ff
+    t.baseMaterial = new parameters.THREE.MeshStandardMaterial({
+        map : t.map,
+        normalMap : t.normalMap,
+        roughness : 1,
+        metalness : 0
     });
 
 };
@@ -112,9 +116,10 @@ Earth.prototype.update = function(renderer,camera,time,elapsed){
 
     const t = this;
 
-    if(t.meshRendered){
+    if(t.meshBase){
 
-        t.meshRendered.rotation.y += Math.PI * 2 * (elapsed / t.CIRCONVOLUTION);
+        //Base
+        t.meshBase.rotation.y += Math.PI * 2 * (elapsed / t.CIRCONVOLUTION);
 
         //Update and render textures
         //t.renderedMaterial.uniforms.time.value = time;
@@ -123,5 +128,11 @@ Earth.prototype.update = function(renderer,camera,time,elapsed){
     }
 
 };
+
+Earth.prototype.toRadians = function (deg){
+
+    return deg * (Math.PI / 180);
+
+}
 
 module.exports = Earth;

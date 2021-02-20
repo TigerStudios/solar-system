@@ -84,7 +84,7 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
 
     this.initRenderer();
     this.initCamera();
-    //this.initLights();
+    this.initLights();
     this.initControls();
     this.listeners();
     this.render();
@@ -137,7 +137,7 @@ App.prototype.initLights = function (){
 
     const t = this;
 
-    t.ambient = new t.THREE.AmbientLight(0xfffdd9,1.5);
+    t.ambient = new t.THREE.AmbientLight(0xffffff,1);
     t.scene.add(t.ambient);
 
 };
