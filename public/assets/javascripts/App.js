@@ -90,7 +90,7 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     this.initRenderer();
     this.initCamera();
     this.initLights();
-    //this.initControls();
+    this.initControls();
     this.listeners();
     this.render();
 
@@ -132,13 +132,13 @@ App.prototype.initCamera = function(){
 
     t.camera = new t.THREE.PerspectiveCamera(50,window.innerWidth / window.innerHeight,0.1,1000);
 
-    //t.camera.position.copy(t.COORDINATES[t.currentLocation]);
-    //t.camera.lookAt(new t.THREE.Vector3());
+    t.camera.position.copy(t.COORDINATES[t.currentLocation]);
+    t.camera.lookAt(new t.THREE.Vector3());
 
-    t.camera.position.copy(t.COORDINATES['earth']);
+    /*t.camera.position.copy(t.COORDINATES['earth']);
     t.camera.lookAt(t.LOOK_AT['earth']);
     t.onSun = false;
-    t.onEarth = true;
+    t.onEarth = true;*/
 
 };
 

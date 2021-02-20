@@ -36,12 +36,6 @@ float noise(vec3 p){
     return o4.y * d.y + o4.x * (1.0 - d.y);
 }
 
-float fresnel(vec3 eyeVector , vec3 worldNormal){
-
-    return pow(1.0 + dot(eyeVector,worldNormal) , 3.);
-
-}
-
 mat2 r(float a){
 
     float c = cos(a);
