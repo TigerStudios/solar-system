@@ -24,6 +24,7 @@ function Moon( parameters ) {
     this.renderedMaterial = null;
 
     this.setRendered(parameters);
+    this.listeners();
 
     this.meshRendered = new this.THREE.Mesh(this.renderedGeometry,this.renderedMaterial);
     this.moonMesh = new parameters.THREE.Group();
@@ -31,7 +32,29 @@ function Moon( parameters ) {
     this.moonMesh.add(this.meshRendered);
     this.scene.add(this.moonMesh);
 
+    this.moonMesh.visible = false;
+
 }
+
+Moon.prototype.listeners = function (){
+
+    const t = this;
+
+    _(window).on('LOCATION_CHANGE',(e) => {
+
+        if(e.data.location === 'moon'){
+
+            t.moonMesh.visible = true;
+
+        }else{
+
+            t.moonMesh.visible = false;
+
+        }
+
+    });
+
+};
 
 Moon.prototype.setRendered = function(parameters){
 

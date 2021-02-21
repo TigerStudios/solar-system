@@ -29,9 +29,9 @@ void main() {
     vPosition = position;
     vNormal = normal;
 
-    float t0 = time * 0.0005;
+    float t0 = time * 0.0008;
     float t1 = time * 0.0005;
-    float t2 = time * 0.0005;
+    float t2 = time * 0.0007;
 
     vec3 pos0 = normal;
     vec3 pos1 = normal + .5;

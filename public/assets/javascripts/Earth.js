@@ -31,6 +31,7 @@ function Earth( parameters ) {
     //textures
     this.map = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_m.png`);
     this.normalMap = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_n.jpg`);
+    this.glowTexture = new this.THREE.TextureLoader().load(`${asset}assets/images/earth/earth_glow.png`);
 
     //Clouds cube
     this.cubeTarget = null;
@@ -52,25 +53,57 @@ function Earth( parameters ) {
     this.aloGeometry = null;
     this.aloMaterial = null;
 
+    //Glow
+    this.glowGeometry = null;
+    this.glowMaterial = null;
+
     this.setCube(parameters);
     this.setBase(parameters);
     this.setClouds(parameters);
     this.setAlo(parameters);
+    this.setGlow(parameters);
+    this.listeners();
 
     this.meshBase = new this.THREE.Mesh(this.baseGeometry,this.baseMaterial);
     this.meshClouds = new this.THREE.Mesh(this.cloudsGeometry,this.cloudsMaterial);
     this.meshAlo = new this.THREE.Mesh(this.aloGeometry,this.aloMaterial);
+    this.meshGlow = new this.THREE.Mesh(this.glowGeometry,this.glowMaterial);
+    //this.meshGlow.position.set(0.3,0,0,);
+    //this.meshGlow.rotation.set(0,this.toRadians(-90),0,);
 
     this.earthMesh = new parameters.THREE.Group();
 
     this.earthMesh.add(this.meshBase);
     this.earthMesh.add(this.meshClouds);
     this.earthMesh.add(this.meshAlo);
-    
+    this.earthMesh.add(this.meshGlow);
+
     this.meshBase.rotation.set(this.X_ROTATION,this.Y_ROTATION,this.Z_ROTATION);
     this.scene.add(this.earthMesh);
 
+    this.earthMesh.visible = false;
+
 }
+
+Earth.prototype.listeners = function (){
+
+    const t = this;
+
+    _(window).on('LOCATION_CHANGE',(e) => {
+
+        if(e.data.location === 'earth'){
+
+            t.earthMesh.visible = true;
+
+        }else{
+
+            t.earthMesh.visible = false;
+
+        }
+
+    });
+
+};
 
 Earth.prototype.setCube = function (parameters){
 
@@ -156,6 +189,23 @@ Earth.prototype.setAlo = function (parameters){
         uniforms : t.getUniformsAlo(),
         side : parameters.THREE.FrontSide,
         transparent : true,
+    });
+
+};
+
+Earth.prototype.setGlow = function (parameters){
+
+    const t = this;
+
+    t.glowGeometry = new parameters.THREE.PlaneBufferGeometry(
+        2,
+        2,
+    );
+
+    t.glowMaterial =  new parameters.THREE.MeshBasicMaterial({
+        side : parameters.THREE.DoubleSide,
+        map : t.glowTexture,
+        transparent : true
     });
 
 };
@@ -256,6 +306,9 @@ Earth.prototype.update = function(renderer,camera,time,elapsed){
 
         //Alo
         t.aloMaterial.uniforms.time.value = time;
+
+        //Glow
+        t.meshGlow.lookAt(camera.position);
 
         //Rotation
         t.meshBase.rotation.y += Math.PI * 2 * (elapsed / t.CIRCONVOLUTION);

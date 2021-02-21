@@ -67,6 +67,7 @@ function Sun( parameters ) {
     this.setAlo(parameters);
     this.setRays(parameters);
     this.setRays2(parameters);
+    this.listeners();
 
     this.meshCube = new parameters.THREE.Mesh(this.cubeGeometry,this.cubeMaterial);
     this.meshRendered = new parameters.THREE.Mesh(this.renderedGeometry,this.renderedMaterial);
@@ -82,9 +83,29 @@ function Sun( parameters ) {
     this.sunMesh.add(this.meshRays2);
 
     this.cubeScene.add(this.meshCube);
-    //this.scene.add(this.sunMesh);
+    this.scene.add(this.sunMesh);
 
 }
+
+Sun.prototype.listeners = function (){
+
+    const t = this;
+
+    _(window).on('LOCATION_CHANGE',(e) => {
+
+        if(e.data.location === 'sun'){
+
+            t.sunMesh.visible = true;
+
+        }else{
+
+            t.sunMesh.visible = false;
+
+        }
+
+    });
+
+};
 
 Sun.prototype.setCube = function(parameters){
 
