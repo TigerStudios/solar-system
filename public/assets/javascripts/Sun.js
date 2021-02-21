@@ -82,7 +82,7 @@ function Sun( parameters ) {
     this.sunMesh.add(this.meshRays2);
 
     this.cubeScene.add(this.meshCube);
-    this.scene.add(this.sunMesh);
+    //this.scene.add(this.sunMesh);
 
 }
 

@@ -13,7 +13,6 @@ function Moon( parameters ) {
     this.APP_DAY_MS = 86400000;
     this.RADIUS = 1737;
     this.CIRCONVOLUTION = (27 * this.APP_DAY_MS) / this.APP_TIME_SCALE;
-    this.X_POSITION = 152384400 / this.APP_SCALE;
 
     //Shaders
     this.vertexShaderRenderd = null;
@@ -28,7 +27,6 @@ function Moon( parameters ) {
 
     this.meshRendered = new this.THREE.Mesh(this.renderedGeometry,this.renderedMaterial);
     this.moonMesh = new parameters.THREE.Group();
-    this.moonMesh.position.set(this.X_POSITION,0,0);
 
     this.moonMesh.add(this.meshRendered);
     this.scene.add(this.moonMesh);

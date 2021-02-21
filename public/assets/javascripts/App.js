@@ -22,19 +22,11 @@ function App(THREE,TWEEN,ORBIT_CONTROLS,asset) {
     this.SUN_Z_DISTANCE = 215;
     this.EARTH_Z_DISTANCE = 1.8;
     this.MOON_Z_DISTANCE = 0.5;
-    this.EARTH_X_DISTANCE = 152000000 / this.APP_SCALE;
-    this.MOON_X_DISTANCE = 152384400 / this.APP_SCALE;
     this.COORDINATES = {
         sun : new THREE.Vector3(0,0,this.SUN_Z_DISTANCE),
-        earth : new THREE.Vector3(this.EARTH_X_DISTANCE,0,this.EARTH_Z_DISTANCE),
-        moon : new THREE.Vector3(this.MOON_X_DISTANCE,0,this.MOON_Z_DISTANCE),
+        earth : new THREE.Vector3(0,0,this.EARTH_Z_DISTANCE),
+        moon : new THREE.Vector3(0,0,this.MOON_Z_DISTANCE),
     }
-    this.LOOK_AT = {
-        sun : new THREE.Vector3(),
-        earth :new THREE.Vector3(this.EARTH_X_DISTANCE,0,0),
-        moon : new THREE.Vector3(this.MOON_X_DISTANCE,0,0),
-    }
-
     this.asset = asset;
 
     //Controllers
@@ -133,12 +125,7 @@ App.prototype.initCamera = function(){
     t.camera = new t.THREE.PerspectiveCamera(50,window.innerWidth / window.innerHeight,0.1,1000);
 
     t.camera.position.copy(t.COORDINATES[t.currentLocation]);
-    t.camera.lookAt(new t.THREE.Vector3());
-
-    /*t.camera.position.copy(t.COORDINATES['earth']);
-    t.camera.lookAt(t.LOOK_AT['earth']);
-    t.onSun = false;
-    t.onEarth = true;*/
+    t.camera.lookAt(new t.THREE.Vector3(0,0,0));
 
 };
 
@@ -261,7 +248,6 @@ App.prototype.setNextLocation = function (){
     setTimeout(() => {
 
         t.camera.position.copy(t.COORDINATES[t.currentLocation]);
-        t.camera.lookAt(t.LOOK_AT[t.currentLocation]);
         t.camera.rotation.set(180 * (Math.PI / 180),0,0);
 
     },1500);
@@ -283,15 +269,12 @@ App.prototype.showNewLocation = function (){
 
         case 'sun' :
             t.onSun = true;
-            t.controls.target = t.LOOK_AT['sun'];
             break;
         case 'earth' :
             t.onEarth = true;
-            t.controls.target = t.LOOK_AT['earth'];
             break;
         case 'moon' :
             t.onMoon = true;
-            t.controls.target = t.LOOK_AT['moon'];
             break;
 
     }
